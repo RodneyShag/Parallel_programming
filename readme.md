@@ -512,8 +512,9 @@ Let `P` be the number of processors. Use an array of `P` arrays. Think of it as 
 
 ## References
 
-- [Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) - Notes are based on this tutorial.
-  - Week 1 - Good videos
-  - Week 2 - Videos 1-3 were good. Videos 4-5 were too mathematical. Video 6: `scan` example was too advanced for this tutorial.
-  - Week 3 - Good videos
-  - Week 4 - Videos 1-2 were good. Videos 3-5: Conc-trees were too advanced for this tutorial.
+[Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) - Notes are based on this tutorial.
+
+- Week 1 - Good videos
+- Week 2 - Videos 1-3 were good. Videos 4-5 were too mathematical. Video 6: `scan` example was too advanced for this tutorial.
+- Week 3 - Good videos
+- Week 4 - Videos 1-2 were good. Videos 3-5: Conc-trees were too advanced for this tutorial.

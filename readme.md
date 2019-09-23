@@ -5,11 +5,11 @@
 - [Parallel Algorithms](#parallel-algorithms)
 - [Runtimes](#runtimes)
 - [Benchmarking](#benchmarking)
-- [Copy - Implementation](#copy-implementation)
-- [Map - Implementation](#map-implementation)
-- [Reduce - Implementation](#reduce-implementation)
+- [Copy: Implementation](#copy-implementation)
+- [Map: Implementation](#map-implementation)
+- [Reduce: Implementation](#reduce-implementation)
 - [Data-Parallel Programming](#data-parallel-programming)
-- [Scala Collections](#scala-parallel-collections)
+- [Scala Collections](#scala-collections)
 - [Splitters and Combiners](#splitters-and-combiners)
 - [Parallel Two-Phase Construction](#parallel-two-phase-construction)
 - [References](#references)
@@ -41,7 +41,7 @@ t.join()
 
 Calling `t.join()` will block execution on the main thread until `HelloThread` completes
 
-## Atomicity, Syncronization, Deadlock
+## Atomicity, Synchronization, Deadlock
 
 Atomicity - An operation is _atomic_ if it appears as if it occurred instantaneously from the point of view of other threads.
 
@@ -177,7 +177,7 @@ The above method can be improved:
 - Ensure steady state (warm-up). This can be achieved by using a tool called "ScalaMeter"
 - Prevent anomalies (Garbage Collection, Just-in-time compilation)
 
-## Copy - Implementation
+## Copy: Implementation
 
 ```scala
 def copy(src: Array[Int], target: Array[Int], from: Int, until: Int, depth: Int): Unit = {
@@ -193,7 +193,7 @@ def copy(src: Array[Int], target: Array[Int], from: Int, until: Int, depth: Int)
 }
 ```
 
-## Map - Implementation
+## Map: Implementation
 
 - __List__: Not good for parallel implementations because
     - difficult to split them in half (need to search for the middle)
@@ -264,7 +264,7 @@ def mapTreePar[A:Manifest, B:Manifest](t: Tree[A], f: A => B) : Tree[B] =
   }
 ```
 
-## Reduce - Implementation
+## Reduce: Implementation
 
 Subtraction is not associative, so the following results are different:
 

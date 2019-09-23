@@ -1,3 +1,5 @@
+<center><h1>Parallel programming</h1></center>
+
 - [Introduction](#introduction)
 - [Threads](#threads)
 - [Atomicity, Synchronization, Deadlock](#atomicity-synchronization-deadlock)

@@ -1,4 +1,4 @@
-<center><h1>Parallel programming</h1></center>
+# Parallel programming
 
 - [Introduction](#introduction)
 - [Threads](#threads)

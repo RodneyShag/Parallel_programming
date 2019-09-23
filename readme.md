@@ -1,13 +1,13 @@
-
 - [Introduction](#introduction)
 - [Threads](#threads)
 - [Atomicity, Synchronization, Deadlock](#atomicity-synchronization-deadlock)
 - [Parallel Algorithms](#parallel-algorithms)
 - [Runtimes](#runtimes)
 - [Benchmarking](#benchmarking)
-- [Copy: Implementation](#copy-implementation)
-- [Map: Implementation](#map-implementation)
-- [Reduce: Implementation](#reduce-implementation)
+- Implementation
+    - [Copy](#copy-implementation)
+    - [Map](#map-implementation)
+    - [Reduce](#reduce-implementation)
 - [Data-Parallel Programming](#data-parallel-programming)
 - [Scala Collections](#scala-collections)
 - [Splitters and Combiners](#splitters-and-combiners)
@@ -22,7 +22,7 @@ __CPU speed-up is non-linear__ - The power required to speed up a CPU starts to 
 
 ## Threads
 
-__Thread memory address space__ - Threads can be started from within the same program, and they share the same memory address space (so they can share the same memory)
+__Thread memory address space__ - Threads can be started from within the same program, and they share the same memory.
 
 Example using threads:
 
@@ -45,11 +45,9 @@ Calling `t.join()` will block execution on the main thread until `HelloThread` c
 
 Atomicity - An operation is _atomic_ if it appears as if it occurred instantaneously from the point of view of other threads.
 
-`synchronized` keyword - used to acheive atomicity.
+the `synchronized` keyword is used to acheive atomicity.
 
-Example using synchronized blocks on 2 threads:
-
-Example of deadlock:
+Example of deadlock with 2 synchronized threads:
 
 ```scala
 class Account(private var amount: Int = 0) {
@@ -87,8 +85,9 @@ val s = startThread(a2, a1, 150000)
 t.join()
 s.join()
 ```
+Deadlock occurred since the Account `a1` is waiting for Account `a2` to release the lock, and Account `a2` is waiting for Account `a1` to release the lock.
 
-The deadlock can be fixed by ensuring a lock is grabbed for the smaller account number before the larger account number.
+This deadlock can be fixed by ensuring a lock is grabbed for the smaller account number before the larger account number.
 
 ```scala
 class Account(private var amount: Int = 0) {
@@ -117,16 +116,16 @@ def parallel[A, B](taskA: => A, taskB: => B): (A, B) = { ... }
 
 Scala "by-name" parameters `=>` are used to achieve lazy evaluation of `A` and `B`, so that they can be evaluated in parallel instead of when the function is initially called.
 
-Here is a recursive algorithm for an unbounded number of threads. It calculates the "p-norm" for a 2-D vector:
+Here is a recursive algorithm for an unbounded number of threads. It calculates the _p-norm_ for a 2-D vector:
 
 ```scala
 def pNormRec(a: Array[Int], p: Double): Int =
   power(segmentRec(a, p, 0, a.length), 1/p)
 
 def segmentRec(a: Array[Int], p: Double, s: Int, t: Int) = {
-  if (t - s < threshold)
+  if (t - s < threshold) {
     sumSegment(a, p, s, t) // small segment: do it sequentially
-  else {
+  } else {
     val m = (s + t) / 2
     val (sum1, sum2) = parallel(segmentRec(a, p, s, m), segmentRec(a, p, m, t))
     sum1 + sum2
@@ -147,13 +146,13 @@ power(part1 + part2 + part3 + part4, 1/p)
 
 ## Runtimes
 
-If we sum all integers in an array of length `n`, our runtime is O(n) if it's done sequentially.
+If we sum all integers in an array of length `n`, our runtime is `O(n)` if it's done sequentially.
 
-If we can parallelize this computation, and assuming enough CPUs available for full parallelization, then the code takes "tree" form, where the runtime is the same as the height of the tree: O(log(n))
+Assuming enough CPUs are available for full parallelization, then the code takes "tree" form where the runtime is the same as the height of the tree: O(log(n))
 
 ```
                       sum(0 to 8)
-         sum(0 to 4)                sum(5 to 8)           // both done in parallel
+      sum(0 to 4)                   sum(5 to 8)           // both done in parallel
 sum(0 to 2)  sum(3 to 4)      sum(5 to 6)  sum(7 to 8)    // all 4 done in parallel
 ```
 
@@ -161,7 +160,7 @@ If we didn't have enough CPUs for full parallelization, the runtime would be O(n
 
 ## Benchmarking
 
-A naive approach is to do
+A naive approach for benchmarking is to do:
 
 ```scala
 val xs = List(1, 2, 3)
@@ -170,12 +169,12 @@ xs.reverse
 println((System.nanoTime - startTime) / 1000000)
 ```
 
-The above method can be improved:
-- Do Multiple repetitions
-- Do statistical treatment - computing mean and variance
-- Eliminate outliers
-- Ensure steady state (warm-up). This can be achieved by using a tool called "ScalaMeter"
-- Prevent anomalies (Garbage Collection, Just-in-time compilation)
+The above method can be improved by
+- doing Multiple repetitions
+- statistical treatment - computing mean and variance
+- Eliminating outliers
+- Ensuring steady state (warm-up). This can be achieved by using a tool called _ScalaMeter_
+- Preventing anomalies (Garbage Collection, Just-in-time compilation)
 
 ## Copy: Implementation
 
@@ -229,6 +228,9 @@ res1: Array[Int] = Array(0, 9, 16, 0, 0)
 
 #### Parallel Map
 
+- The base case is a sequential map.
+- The recursive case is a parallel recursive map
+
 ```scala
 def mapASegSeq[A, B](inp: Array[A], left: Int, right: Int, f : A => B,
                      out: Array[B]) = {
@@ -243,6 +245,9 @@ def mapASegSeq[A, B](inp: Array[A], left: Int, right: Int, f : A => B,
 ```
 
 #### Parallel Map on Tree
+
+- The base case is a sequential map.
+- The recursive case is a parallel recursive map
 
 ```scala
 def mapTreePar[A:Manifest, B:Manifest](t: Tree[A], f: A => B) : Tree[B] =
@@ -322,7 +327,9 @@ def reduce[A](inp: Array[A], f: (A, A) => A): A =
 
 ## Data-Parallel Programming
 
-We use the `.par` function to conver the range to a parallel range. Iterations of the parallel loop will be executed on different processers. A parallel for loop does not return a value. It can only interact with the rest of the program by performing a side effect, such as writing to an array. This is only correct if iterations of the for loop write to separate memory locations, or use some form of synchronization.
+We use the `.par` function to convert a range to a parallel range. Iterations of the parallel loop will be executed on different processers. A parallel `for` loop does not return a value. It can only interact with the rest of the program by performing a side effect, such as writing to an array. This is only correct if iterations of the `for` loop write to separate memory locations, or use some form of synchronization.
+
+The following code is correct:
 
 ```scala
 def initializeArray(xs: Array[Int])(v: Int): Unit = {
@@ -331,7 +338,7 @@ def initializeArray(xs: Array[Int])(v: Int): Unit = {
   }
 }
 ```
-If we had changed `xs(0) = i`, the code would be incorrect.
+But if we had changed `xs(i) = v` to `xs(0) = i`, the code would be incorrect since we would be trying to access the same entry in an array in multiple iterations of the `for` loop.
 
 Scala collections can be converted to parallel collections by invoking the `.par` method:
 
@@ -341,7 +348,7 @@ Scala collections can be converted to parallel collections by invoking the `.par
   .count(n => n.toString == n.toString.reverse)
 ```
 
-Implement `sum` in parallel
+Implementation of `sum` in parallel:
 
 ```scala
 def sum(xs: Array[int]) : Int = {
@@ -349,22 +356,20 @@ def sum(xs: Array[int]) : Int = {
 }
 ```
 
-Implement `max` in parallel
+Implementation of `max` in parallel:
 
 ```scala
 def max(xs: Array[Int]): Int = {
-  xs.par.fold(Int.MinValue)(math.max)
+  xs.par.fold(Int.MinValue)(math.max) // or rewrite math.max as: (x, y) => if (x > y) x else y
 }
-
-// or rewrite math.max as: (x, y) => if (x > y) x else y
 ```
 
-For the previous 2 examples, `fold` worked out for us since the functions we provided (+ and math.max) were associative. The benefit of `fold` (as compared to foldLeft or foldRight) is that `fold` can run in parallel.
+For the previous 2 examples, `fold` worked out for us since the functions we provided (`+` and `math.max`) were associative. The benefit of `fold` (as compared to `foldLeft` or `foldRight`) is that `fold` can run in parallel.
 
 
 #### Counting Vowels
 
-We need the `aggregate` function:
+To count vowels in an array, we use the `aggregate` function:
 
 ```scala
 def aggregate[B](z: B)(f: (B, A) => B, g: (B, B) => B): B
@@ -408,7 +413,7 @@ Each processor will use `f: (B, A) => B` to do it's calucation. The resulting ca
 
 These are collections that can have code that can be executed either in sequential or parallel: `GenIteratble[T]`, `GenSeq[T]`, `GenSet[T]`, `GenMap[K, V]`
 
-`15251` is a sample palindrome. This method searches for the largest palindrome in a sequence.
+`15251` is a sample palindrome. `largestPalindrome` searches for the largest palindrome in a sequence:
 
 ```scala
 def largestPalindrome(xs: GenSeq[Int]): Int = {
@@ -442,7 +447,7 @@ intersection((0 until 1000).par.toSet, (0 until 1000 by 4).par.toSet)
 
 The program can be fixed by replacing `mutable.Set[Int]` with Java's `new ConcurrentSkipListSet[Int]()`
 
-A smarter way to solve the problem is to recode it to use `filter` instead of creating a new `Set`
+A smarter way to solve the problem is to recode the method to use `filter` instead of creating a new `Set`
 
 ```scala
 def intersection(a: GenSet[Int], b: GenSet[Int]): GenSet[Int] = {
@@ -466,18 +471,18 @@ trait Splitter[A] extends Iterator[A] {
 	def remaining: Int
 }
 ```
-Every parallel collection has it's own Splitter implementation. Splitting is done multiple times during execution of a parallel operation, so it should be O(log n) or better runtime.
+Every parallel collection has its own `Splitter` implementation. Splitting is done multiple times during execution of a parallel operation, so it should be `O(log n)` or better runtime for us to benefit from parallelization.
 
 #### Combiner
 
 ```scala
 trait Combiner[A, Repr] extends Builder[A, Repr] {
-	def combine(that: Combiner[A, Repr]): Combiner[A, Repr]
+  def combine(that: Combiner[A, Repr]): Combiner[A, Repr]
 }
 ```
 
 - combines 2 combiner objects into 1 combiner
-- Should be O(log n + log m) or better runtime
+- Should be `O(log n + log m)` or better runtime
 - When collection is a set or map, combine represents a _union_
 - When collection is a sequence, combine represents _concatenation_
 
@@ -487,9 +492,11 @@ Let us discuss two-phase construction for arrays.
 
 #### Combiner: Requirements
 
+Achieving faster than `O(n)` runtime is not possible for `combine` if we use a standard array.
+
 In Two-Phase construction, the combiner has an intermediate data structure as its internal representation
 
-1. For `+=`, the intermediate data structure should an efficient runtime
+1. For `+=`, the intermediate data structure should have an efficient runtime
 1. For `combine`, the intermediate data structure should have O(log n + log m) or better runtime
 1. For intermediate data structure, it must be possible to convert to the resulting data structure in O(n/P) time. That is, the conversion must be parallelizable
 
@@ -506,7 +513,7 @@ Let `P` be the number of processors. Use an array of `P` arrays. Think of it as 
 ## References
 
 - [Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) - Notes are based on this tutorial.
-  - Week 1 - Great examples.
+  - Week 1 - Good videos
   - Week 2 - Videos 1-3 were good. Videos 4-5 were too mathematical. Video 6: `scan` example was too advanced for this tutorial.
-  - Week 3 - good lectures
+  - Week 3 - Good videos
   - Week 4 - Videos 1-2 were good. Videos 3-5: Conc-trees were too advanced for this tutorial.

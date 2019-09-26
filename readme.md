@@ -371,7 +371,7 @@ For the previous 2 examples, `fold` worked out for us since the functions we pro
 
 #### Counting Vowels
 
-To count vowels in an array, we use the `aggregate` function:
+`def foldLeft[B](z: B)(f: (B, A) => B): B` or `def fold(z: A)(f: (A, A) => A): A` can be to count vowels. We can use `aggregate` instead, which is like a combination of the 2 functions.
 
 ```scala
 def aggregate[B](z: B)(f: (B, A) => B, g: (B, B) => B): B
@@ -384,7 +384,9 @@ Array('E', 'P', 'F', 'L').par.aggregate(0)(
 )
 ```
 
-Each processor will use `f: (B, A) => B` to do it's calucation. The resulting calculations from the processors are combined using `g: (B, B) => B`. `aggregate` is a very general operation.
+![Aggregate function](./images/aggregate.png)
+
+Each processor will use `f: (B, A) => B` to do its calculation. The resulting calculations from the processors are combined using `g: (B, B) => B`. `aggregate` is a very general operation.
 
 
 ## Scala Collections

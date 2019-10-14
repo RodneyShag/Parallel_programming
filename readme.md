@@ -1,6 +1,5 @@
 # Parallel programming
 
-- [Intended Learning Strategy](#intended-learning-strategy)
 - [Introduction](#introduction)
 - [Threads](#threads)
 - [Atomicity, Synchronization, Deadlock](#atomicity-synchronization-deadlock)
@@ -18,11 +17,7 @@
 - [References](#references)
 
 
-## Intended Learning Strategy
-
-This repo is a concise summary and replacement of the [Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) course.
-
-Read this repo linearly from top to bottom. You do not need to access the above course to learn Parallel Programming. However, the course link is provided just in case you need more information about a topic.
+This repo is a concise summary and _replacement_ of the [Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) course. Using the hyperlinks below is optional.
 
 
 ## Introduction

@@ -1,5 +1,6 @@
 # Parallel programming
 
+- [Intended Learning Strategy](#intended-learning-strategy)
 - [Introduction](#introduction)
 - [Threads](#threads)
 - [Atomicity, Synchronization, Deadlock](#atomicity-synchronization-deadlock)
@@ -16,11 +17,20 @@
 - [Parallel Two-Phase Construction](#parallel-two-phase-construction)
 - [References](#references)
 
+
+## Intended Learning Strategy
+
+This repo is a concise summary and replacement of the [Coursera: Parallel programming](https://www.coursera.org/learn/parprog1?specialization=scala) course.
+
+Read this repo linearly from top to bottom. You do not need to access the above course to learn Parallel Programming. However, the course link is provided just in case you need more information about a topic.
+
+
 ## Introduction
 
 __Parallel computing__ is a type of computation in which many calculations are performed at the same time.
 
 __CPU speed-up is non-linear__ - The power required to speed up a CPU starts to grow non-linearly. For this reason, we add more CPUs instead of trying to speed up just 1 CPU.
+
 
 ## Threads
 
@@ -42,6 +52,7 @@ t.join()
 ```
 
 Calling `t.join()` will block execution on the main thread until `HelloThread` completes
+
 
 ## Atomicity, Synchronization, Deadlock
 
@@ -108,6 +119,7 @@ class Account(private var amount: Int = 0) {
 }
 ```
 
+
 ## Parallel Algorithms
 
 The `parallel` keyword will parallelize 2 calls. It is defined as:
@@ -146,6 +158,7 @@ val ((part1, part2), (part3, part4)) =
 power(part1 + part2 + part3 + part4, 1/p)
 ```
 
+
 ## Runtimes
 
 If we sum all integers in an array of length `n`, our runtime is `O(n)` if it's done sequentially.
@@ -159,6 +172,7 @@ sum(0 to 2)  sum(3 to 4)      sum(5 to 6)  sum(7 to 8)    // all 4 done in paral
 ```
 
 If we didn't have enough CPUs for full parallelization, the runtime would be O(n)
+
 
 ## Benchmarking
 
@@ -178,6 +192,7 @@ The above method can be improved by
 - Ensuring steady state (warm-up). This can be achieved by using a tool called _ScalaMeter_
 - Preventing anomalies (Garbage Collection, Just-in-time compilation)
 
+
 ## Copy: Implementation
 
 ```scala
@@ -193,6 +208,7 @@ def copy(src: Array[Int], target: Array[Int], from: Int, until: Int, depth: Int)
   }
 }
 ```
+
 
 ## Map: Implementation
 
@@ -271,6 +287,7 @@ def mapTreePar[A:Manifest, B:Manifest](t: Tree[A], f: A => B) : Tree[B] =
   }
 ```
 
+
 ## Reduce: Implementation
 
 Subtraction is not associative, so the following results are different:
@@ -326,6 +343,7 @@ def reduceSeg[A](inp: Array[A], left: Int, right: Int, f: (A, A) => A): A = {
 def reduce[A](inp: Array[A], f: (A, A) => A): A =
   reduceSeg(inp, 0, inp.length, f)
 ```
+
 
 ## Data-Parallel Programming
 
@@ -490,6 +508,7 @@ trait Combiner[A, Repr] extends Builder[A, Repr] {
 - When collection is a set or map, combine represents a _union_
 - When collection is a sequence, combine represents _concatenation_
 
+
 ## Parallel Two-Phase Construction
 
 Let us discuss two-phase construction for arrays.
@@ -513,6 +532,7 @@ Let `P` be the number of processors. Use an array of `P` arrays. Think of it as 
 1. `+=` is O(1) amortized time to add 1 element to the end of 1 of the nested arrays.
 1. `combine` is O(P) runtime to copy references to arrays, instead of copying arrays.
 1. Converting to the resulting data structure can be done in parallel in O(n/P) time since we are writing to `n/P` different parts of the array in parallel.
+
 
 ## References
 
